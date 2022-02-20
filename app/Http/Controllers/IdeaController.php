@@ -16,7 +16,7 @@ class IdeaController extends Controller
     public function index()
     {
         return view('idea.index', [
-            'ideas' => Idea::all()
+            'ideas' => Idea::simplePaginate(10)
         ]);
     }
 
@@ -49,7 +49,9 @@ class IdeaController extends Controller
      */
     public function show(Idea $idea)
     {
-        //
+        return view('idea.show', [
+            'idea' => $idea
+        ]);
     }
 
     /**
