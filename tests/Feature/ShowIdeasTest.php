@@ -47,4 +47,51 @@ class ShowIdeasTest extends TestCase
         $response->assertSee($idea->title);
         $response->assertSee($idea->description);
     }
+
+    /** @test */
+    public function ideas_pagination_works()
+    {
+        Idea::factory(Idea::PAGINATION_COUNT + 1)->create();
+
+        $ideaOne = Idea::find(1);
+        $ideaOne->title = 'My first idea';
+        $ideaOne->save();
+        
+        $ideaEleven = Idea::find(11);
+        $ideaEleven->title = 'My 11 idea';
+        $ideaEleven->save();
+
+        $response = $this->get('/');
+
+        $response->assertSee($ideaOne->title);
+        $response->assertDontSee($ideaEleven->title);
+        
+        $response = $this->get('/?page=2');
+
+        $response->assertDontSee($ideaOne->title);
+        $response->assertSee($ideaEleven->title);
+    }
+
+    public function same_idea_title_different_slugs()
+    {
+        $ideaOne = Idea::factory()->create([
+            'title' => 'My 1 idea',
+            'description' => 'My 1 idea desc',
+        ]);
+
+        $ideaTwo = Idea::factory()->create([
+            'title' => 'My 1 idea',
+            'description' => 'My 2 idea desc',
+        ]);
+
+        $response = $this->get(route('idea.show', $ideaOne));
+
+        $response->assertSuccessful();
+        $this->assertTrue(request()->path() === 'ideas/my-1-idea');
+
+        $response = $this->get(route('idea.show', $ideaTwo));
+
+        $response->assertSuccessful();
+        $this->assertTrue(request()->path() === 'ideas/my-1-idea-1');
+    }
 }
