@@ -10,9 +10,9 @@ use Tests\TestCase;
 class ShowIdeasTest extends TestCase
 {
     use RefreshDatabase;
-    
+
     /** @test */
-    public function list_of_ideas_shows_on_main_page() 
+    public function list_of_ideas_shows_on_main_page()
     {
         $ideaOne = Idea::factory()->create([
             'title' => 'First',
@@ -34,7 +34,7 @@ class ShowIdeasTest extends TestCase
     }
 
     /** @test */
-    public function singe_idea_shows_correctly_on_the_show_page() 
+    public function singe_idea_shows_correctly_on_the_show_page()
     {
         $idea = Idea::factory()->create([
             'title' => 'First',
@@ -47,7 +47,6 @@ class ShowIdeasTest extends TestCase
         $response->assertSee($idea->title);
         $response->assertSee($idea->description);
     }
-
     /** @test */
     public function ideas_pagination_works()
     {
@@ -56,7 +55,7 @@ class ShowIdeasTest extends TestCase
         $ideaOne = Idea::find(1);
         $ideaOne->title = 'My first idea';
         $ideaOne->save();
-        
+
         $ideaEleven = Idea::find(11);
         $ideaEleven->title = 'My 11 idea';
         $ideaEleven->save();
@@ -65,33 +64,24 @@ class ShowIdeasTest extends TestCase
 
         $response->assertSee($ideaOne->title);
         $response->assertDontSee($ideaEleven->title);
-        
+
         $response = $this->get('/?page=2');
 
         $response->assertDontSee($ideaOne->title);
         $response->assertSee($ideaEleven->title);
     }
 
+    /** @test */
     public function same_idea_title_different_slugs()
     {
         $ideaOne = Idea::factory()->create([
-            'title' => 'My 1 idea',
-            'description' => 'My 1 idea desc',
+            'title' => 'My First Idea',
         ]);
-
         $ideaTwo = Idea::factory()->create([
-            'title' => 'My 1 idea',
-            'description' => 'My 2 idea desc',
+            'title' => 'My First Idea',
         ]);
 
-        $response = $this->get(route('idea.show', $ideaOne));
-
-        $response->assertSuccessful();
-        $this->assertTrue(request()->path() === 'ideas/my-1-idea');
-
-        $response = $this->get(route('idea.show', $ideaTwo));
-
-        $response->assertSuccessful();
-        $this->assertTrue(request()->path() === 'ideas/my-1-idea-1');
+        $this->assertEquals('my-first-idea', $ideaOne->slug);
+        $this->assertEquals('my-first-idea-2', $ideaTwo->slug);
     }
 }
