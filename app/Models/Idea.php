@@ -13,7 +13,7 @@ class Idea extends Model
 
     const PAGINATION_COUNT = 10;
 
-    protected $guarderd = [];   
+    protected $guarderd = [];
 
     /**
      * Return the sluggable configuration array for this model.
@@ -29,7 +29,13 @@ class Idea extends Model
         ];
     }
 
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 }
