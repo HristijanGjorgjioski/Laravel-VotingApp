@@ -14,6 +14,14 @@ class Idea extends Model
     const PAGINATION_COUNT = 10;
 
     protected $guarderd = [];
+    protected $fillable = [
+        'title',
+        'description',
+        'user_id',
+        'category_id',
+        'user_id',
+        'status_id'
+    ];
 
     /**
      * Return the sluggable configuration array for this model.
